@@ -1,11 +1,11 @@
  --Looking at all the relevant Covid Death Data
 
 SELECT	location
-		,date
-		,total_cases
-		,new_cases
-		,total_deaths
-		,population
+	,date
+	,total_cases
+	,new_cases
+	,total_deaths
+	,population
 FROM CovidDataProject..CovidDeaths
 
 ORDER BY 3,4
@@ -14,10 +14,10 @@ ORDER BY 3,4
  --Total Cases vs Total Deaths
 
 SELECT	location
-		,date
-		,total_cases
-		,total_deaths
-		,(total_deaths/total_cases)*100 AS percent_death
+	,date
+	,total_cases
+	,total_deaths
+	,(total_deaths/total_cases)*100 AS percent_death
 FROM CovidDataProject..CovidDeaths
 
 ORDER BY 1,2
@@ -26,10 +26,10 @@ ORDER BY 1,2
  --Total Cases vs Total Deaths in the US
 
 SELECT	location
-		,date
-		,total_cases
-		,total_deaths
-		,(total_deaths/total_cases)*100 AS percent_death
+	,date
+	,total_cases
+	,total_deaths
+	,(total_deaths/total_cases)*100 AS percent_death
 FROM CovidDataProject..CovidDeaths
 
 WHERE location like '%United States%'
@@ -40,10 +40,10 @@ ORDER BY 1,2
  --What percentage actually contracts covid?
 
 SELECT	location
-		,date
-		,population
-		,total_cases
-		,(total_cases/population)*100 AS percent_contracted_covid
+	,date
+	,population
+	,total_cases
+	,(total_cases/population)*100 AS percent_contracted_covid
 FROM CovidDataProject..CovidDeaths
 
 WHERE location like '%United States%' -- Use this to see just the U.S.
@@ -52,8 +52,7 @@ ORDER BY 1,2
 
 --Country Infection Rate vs Population
 
-SELECT
-	location
+SELECT	location
 	,population
 	,MAX(total_cases)					AS infection_peak
 	,(Max(total_cases)/population)*100	AS peak_percent_contracted_covid
@@ -66,7 +65,7 @@ ORDER BY peak_percent_contracted_covid desc
  --Total Covid death count vs population - GROUP BY Country
 
 SELECT	location
-		,Max(CAST(total_deaths AS INT)) AS total_death_count
+	,Max(CAST(total_deaths AS INT)) AS total_death_count
 FROM CovidDataProject..CovidDeaths
 
 WHERE continent IS NOT NULL
@@ -77,7 +76,7 @@ ORDER BY total_death_count desc
  --Total Covid death count vs population - GROUP BY Continent
 
 SELECT	location
-		,Max(CAST(total_deaths AS INT)) AS total_death_count
+	,Max(CAST(total_deaths AS INT)) AS total_death_count
 FROM CovidDataProject..CovidDeaths
 
 WHERE continent is null
@@ -90,9 +89,9 @@ ORDER BY total_death_count desc
 -- Covid Mortality rate  time
 
 SELECT	date
-		,SUM(new_cases)
-		,SUM(CAST(new_deaths AS INT))
-		,SUM(CAST(new_deaths AS INT))/SUM(new_cases)*100 AS death_percentage
+	,SUM(new_cases)
+	,SUM(CAST(new_deaths AS INT))
+	,SUM(CAST(new_deaths AS INT))/SUM(new_cases)*100 AS death_percentage
 FROM CovidDataProject..CovidDeaths
 
 WHERE continent IS NOT NULL
@@ -103,8 +102,8 @@ ORDER BY 1,2
 -- Covid Mortality rate  time
 
 SELECT	SUM(new_cases)
-		,SUM(CAST(new_deaths AS INT))
-		,SUM(CAST(new_deaths AS INT))/SUM(new_cases)*100 AS death_percentage
+	,SUM(CAST(new_deaths AS INT))
+	,SUM(CAST(new_deaths AS INT))/SUM(new_cases)*100 AS death_percentage
 FROM CovidDataProject..CovidDeaths
 
 WHERE continent IS NOT NULL
@@ -114,9 +113,9 @@ ORDER BY 1,2
 -- Total pop vs total vaccines over time
 
 SELECT	dea.continent
-		,dea.location
-		,dea.date, dea.population
-		,vac.new_vaccinations
+	,dea.location
+	,dea.date, dea.population
+	,vac.new_vaccinations
 FROM CovidDataProject..CovidDeaths dea
 JOIN CovidDataProject..CovidVaccinations vac
 	On	dea.location = vac.location
@@ -129,11 +128,11 @@ ORDER BY 1,2,3
 -- Totaling vaccines over time for a rolling total # of vaccinated
 
 SELECT	dea.continent
-		,dea.location
-		,dea.date
-		,dea.population
-		,vac.new_vaccinations
-		,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
+	,dea.location
+	,dea.date
+	,dea.population
+	,vac.new_vaccinations
+	,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
 FROM CovidDataProject..CovidDeaths dea
 JOIN CovidDataProject..CovidVaccinations vac
 	On dea.location = vac.location
@@ -148,11 +147,11 @@ ORDER BY 2,3
 With PopvsVac (Continent, Location, Date, Population, new_vaccinations, rolling_people_vaxed) AS
 (
 	SELECT	dea.continent
-			,dea.location
-			,dea.date
-			,dea.population
-			,vac.new_vaccinations
-			,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
+		,dea.location
+		,dea.date
+		,dea.population
+		,vac.new_vaccinations
+		,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
 	FROM CovidDataProject..CovidDeaths dea
 	JOIN CovidDataProject..CovidVaccinations vac
 		On	dea.location = vac.location
@@ -181,11 +180,11 @@ CREATE TABLE #PercentPopVaccinated
 
 INSERT INTO #PercentPopVaccinated
 SELECT	dea.continent
-		,dea.location
-		,dea.date
-		,dea.population
-		,vac.new_vaccinations
-		,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
+	,dea.location
+	,dea.date
+	,dea.population
+	,vac.new_vaccinations
+	,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
 FROM CovidDataProject..CovidDeaths dea
 JOIN CovidDataProject..CovidVaccinations vac
 	ON	dea.location = vac.location
@@ -202,10 +201,10 @@ FROM #PercentPopVaccinated
 
 Create view PercentPopulationVaccinated as
 SELECT	dea.continent
-		,dea.location
-		,dea.date, dea.population
-		,vac.new_vaccinations
-		,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
+	,dea.location
+	,dea.date, dea.population
+	,vac.new_vaccinations
+	,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
 FROM CovidDataProject..CovidDeaths dea
 JOIN CovidDataProject..CovidVaccinations vac
 	ON	dea.location = vac.location
@@ -219,8 +218,8 @@ WHERE dea.continent IS NOT NULL
 -- 1. 
 
 SELECT	SUM(new_cases) AS total_cases
-		,SUM(CAST(new_deaths AS INT)) AS total_deaths
-		,SUM(CAST(new_deaths AS INT))/SUM(New_Cases)*100 AS DeathPercentage
+	,SUM(CAST(new_deaths AS INT)) AS total_deaths
+	,SUM(CAST(new_deaths AS INT))/SUM(New_Cases)*100 AS DeathPercentage
 FROM CovidDataProject..CovidDeaths
 
 WHERE continent IS NOT NULL 
@@ -230,7 +229,7 @@ ORDER BY 1,2
 -- 2. 
 
 SELECT	location
-		,SUM(CAST(new_deaths AS INT)) AS total_death_count
+	,SUM(CAST(new_deaths AS INT)) AS total_death_count
 FROM CovidDataProject..CovidDeaths
 WHERE	continent is null 
 		AND location not in ('World', 'European Union', 'International')
@@ -242,9 +241,9 @@ ORDER BY total_death_count desc
 -- 3.
 
 SELECT	location
-		,population
-		,MAX(total_cases) AS highest_infection_count
-		,Max((total_cases/population))*100 AS percent_population_infected
+	,population
+	,MAX(total_cases) AS highest_infection_count
+	,Max((total_cases/population))*100 AS percent_population_infected
 FROM CovidDataProject..CovidDeaths
 GROUP BY location, population
 ORDER BY percent_population_infected desc
@@ -253,10 +252,10 @@ ORDER BY percent_population_infected desc
 -- 4.
 
 SELECT	Location
-		,population
-		,date
-		,MAX(total_cases) AS highest_infection_count
-		,Max((total_cases/population))*100 AS percent_population_infected
+	,population
+	,date
+	,MAX(total_cases) AS highest_infection_count
+	,Max((total_cases/population))*100 AS percent_population_infected
 FROM CovidDataProject..CovidDeaths
 
 GROUP BY Location, Population, date
