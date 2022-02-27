@@ -32,7 +32,7 @@ SELECT	location
 	,(total_deaths/total_cases)*100 AS percent_death
 FROM CovidDataProject..CovidDeaths
 
-WHERE location like '%United States%'
+WHERE location LIKE '%United States%'
 ORDER BY 1,2
 
 
@@ -46,7 +46,7 @@ SELECT	location
 	,(total_cases/population)*100 AS percent_contracted_covid
 FROM CovidDataProject..CovidDeaths
 
-WHERE location like '%United States%' -- Use this to see just the U.S.
+WHERE location LIKE '%United States%' -- Use this to see just the U.S.
 ORDER BY 1,2
 
 
@@ -59,7 +59,7 @@ SELECT	location
 FROM CovidDataProject..CovidDeaths
 
 GROUP BY location, population
-ORDER BY peak_percent_contracted_covid desc
+ORDER BY peak_percent_contracted_covid DESC
 
 
  --Total Covid death count vs population - GROUP BY Country
@@ -70,7 +70,7 @@ FROM CovidDataProject..CovidDeaths
 
 WHERE continent IS NOT NULL
 GROUP BY location
-ORDER BY total_death_count desc
+ORDER BY total_death_count DESC
 
 
  --Total Covid death count vs population - GROUP BY Continent
@@ -81,7 +81,7 @@ FROM CovidDataProject..CovidDeaths
 
 WHERE continent is null
 GROUP BY location
-ORDER BY total_death_count desc
+ORDER BY total_death_count DESC
 
 
 -- Global info --
@@ -132,7 +132,7 @@ SELECT	dea.continent
 	,dea.date
 	,dea.population
 	,vac.new_vaccinations
-	,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
+	,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
 FROM CovidDataProject..CovidDeaths dea
 JOIN CovidDataProject..CovidVaccinations vac
 	On dea.location = vac.location
@@ -151,7 +151,7 @@ With PopvsVac (Continent, Location, Date, Population, new_vaccinations, rolling_
 		,dea.date
 		,dea.population
 		,vac.new_vaccinations
-		,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
+		,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
 	FROM CovidDataProject..CovidDeaths dea
 	JOIN CovidDataProject..CovidVaccinations vac
 		On	dea.location = vac.location
@@ -204,7 +204,7 @@ SELECT	dea.continent
 	,dea.location
 	,dea.date, dea.population
 	,vac.new_vaccinations
-	,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (Partition by dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
+	,SUM(CAST(vac.new_vaccinations AS bigint)) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.date) AS rolling_total_vaxed
 FROM CovidDataProject..CovidDeaths dea
 JOIN CovidDataProject..CovidVaccinations vac
 	ON	dea.location = vac.location
@@ -231,11 +231,11 @@ ORDER BY 1,2
 SELECT	location
 	,SUM(CAST(new_deaths AS INT)) AS total_death_count
 FROM CovidDataProject..CovidDeaths
-WHERE	continent is null 
-		AND location not in ('World', 'European Union', 'International')
+WHERE	continent IS null 
+		AND location NOT IN ('World', 'European Union', 'International')
 
 GROUP BY location
-ORDER BY total_death_count desc
+ORDER BY total_death_count DESC
 
 
 -- 3.
@@ -246,7 +246,7 @@ SELECT	location
 	,Max((total_cases/population))*100 AS percent_population_infected
 FROM CovidDataProject..CovidDeaths
 GROUP BY location, population
-ORDER BY percent_population_infected desc
+ORDER BY percent_population_infected DESC
 
 
 -- 4.
